@@ -18,3 +18,21 @@ def all_unique_values(dfs, column):
         values.update(set(df[column]))
 
     return values
+
+
+def str_to_list(df, column):
+    """Convert values in a coluumn from string to list"""
+    df[column] = df[column].apply(lambda s: s.split(",") if isinstance(s, str) else s)
+    return df
+
+
+def clean_tags(df_tags):
+    """Clean tags dataframe - drop NAs and convert values to list"""
+    df_tags = df_tags.dropna().reset_index(drop=True)
+    df_tags = str_to_list(df_tags, "tag_list")
+    return df_tags
+
+
+def clean_sentiment(df_sentiment):
+    """Clean sentiment dataframe - drop unnecessary columns"""
+    return df_sentiment.drop(columns=["Unnamed: 0", "user_id", "tip"])
