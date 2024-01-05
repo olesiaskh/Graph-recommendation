@@ -34,8 +34,9 @@ def get_tag_frequency(df_tags):
     return d_tags
 
 
-def get_top_tags(d_tags, min_count=150):
+def get_top_tags(df_tags, min_count=150):
     """Get a dictionary of tags that appear for at least min_count reastaurants"""
+    d_tags = get_tag_frequency(df_tags)
     top_tags = {}
     for tag, freq in d_tags.items():
         if freq >= min_count:
