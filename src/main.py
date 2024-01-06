@@ -4,6 +4,7 @@ import pandas as pd
 from preprocessing import add_prefixes, all_unique_values
 from features.feature_eng import feature_extractor
 from features.network_similarity import get_gcc
+from features.sentiment import calculate_review_sentiment, calculate_affinity
 from training import (
     generate_samples,
     compare_models_supervised,
@@ -33,17 +34,17 @@ if __name__ == "__main__":
         names=["user_id", "venue_id", "tip_text"],
         encoding="unicode_escape",
     )
-    df_sentiment = pd.read_csv(default_path + "check_in_stars_average.csv")
-
-    # get pre-calculated affinity scores between user-venue pairs to create only the edges that indicate a positive experience
-    # TODO: add sentimen calculation here
-    df_scores = pd.read_csv(default_path + "pairs_weights.csv")
 
     # to distinguish between users and venues in the future, add prefixes to ids (u and v, respectively)
     df_chekins = add_prefixes(df_chekins)
     df_tips = add_prefixes(df_tips)
     df_tags = add_prefixes(df_tags)
-    df_scores = add_prefixes(df_scores)
+
+    # calculate sentiment of each review
+    df_sentiment = calculate_review_sentiment(df_tips)
+
+    # transform to affinity scores between user-venue pairs (to create only edges of a positive experience)
+    df_scores = calculate_affinity(df_sentiment, df_chekins)
 
     # get sets of venues and users from all datasets
     users = all_unique_values([df_chekins, df_tips], "user_id")
